@@ -15,7 +15,10 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  double bitCurrency = 0;
+  double BTCCurrency = 0;
+  double ETHCurrency = 0;
+  double LTCCurrency = 0;
+  String vrCoin = 'BTC';
   String? SelectedCurrency = 'USD';
 
   DropdownButton<String> androidDropDown() {
@@ -34,7 +37,9 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           SelectedCurrency = value;
         });
-        getBitCoin();
+        getBitCoin('BTC');
+        getBitCoin('ETH');
+        getBitCoin('LTC');
       },
     );
   }
@@ -55,18 +60,36 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
-  void getBitCoin() async {
-    Uri url = Uri.parse('${bitCoinUrl}$SelectedCurrency?apiKey=$apiKey');
+  void getBitCoin(String coin) async {
+    Uri url = Uri.parse(
+        'https://rest.coinapi.io/v1/exchangerate/$coin/$SelectedCurrency?apiKey=$apiKey');
     NetwrokCall netwrokCall = NetwrokCall(url);
     try {
       var response = await netwrokCall.callApi();
+      // print('coin = $coin please $response');
       setState(() {
-        bitCurrency = response['rate'];
+        if (coin == 'BTC') {
+          setState(() {
+            BTCCurrency = response['rate'];
+          });
+        } else if (coin == 'ETH') {
+          setState(() {
+            ETHCurrency = response['rate'];
+          });
+        } else if (coin == 'LTC') {
+          setState(() {
+            LTCCurrency = response['rate'];
+          });
+        }
       });
+
+
     } catch (e) {
       print(e);
       setState(() {
-        bitCurrency = 429;
+        BTCCurrency = 429;
+        ETHCurrency = 429;
+        LTCCurrency = 429;
       });
     }
   }
@@ -75,12 +98,14 @@ class _PriceScreenState extends State<PriceScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getBitCoin();
+    getBitCoin('BTC');
+    getBitCoin('ETH');
+    getBitCoin('LTC');
   }
 
   @override
   Widget build(BuildContext context) {
-    // getBitCoinUSD();
+    // getBitCoin();
     return Scaffold(
       appBar: AppBar(
         title: Text('🤑 Coin Ticker'),
@@ -101,7 +126,49 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = $bitCurrency',
+                  '1 BTC = $BTCCurrency $SelectedCurrency',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+            child: Card(
+              color: Colors.lightBlueAccent,
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                child: Text(
+                  '1 ETH = $ETHCurrency $SelectedCurrency',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+            child: Card(
+              color: Colors.lightBlueAccent,
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                child: Text(
+                  '1 LTC = $LTCCurrency $SelectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
